@@ -1,0 +1,39 @@
+---
+- name: Unmount /dev/sdb1 if mounted
+  ansible.builtin.mount:
+    path: /part1
+    state: unmounted
+  ignore_errors: yes
+  become: yes
+
+- name: Wipe existing filesystem signatures on /dev/sdb1
+  ansible.builtin.command: wipefs -a /dev/sdb1
+  ignore_errors: yes
+  become: yes
+
+- name: Partition the disk and create an XFS filesystem on the first partition
+  parted:
+    device: /dev/sdb
+    number: 1
+    state: present
+    part_start: 1MiB
+    part_end: 100%
+    flags: []
+  become: yes
+
+- name: Format the first partition with XFS
+  filesystem:
+    fstype: xfs
+    dev: /dev/sdb1
+    force: yes
+  become: yes
+
+- name: Persistently mount the first partition on /part1
+  mount:
+    path: /part1
+    src: /dev/sdb1
+    fstype: xfs
+    opts: defaults
+    state: mounted
+  become: yes
+

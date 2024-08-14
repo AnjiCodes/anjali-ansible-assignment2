@@ -1,0 +1,44 @@
+---
+- name: Install Apache web server
+  yum:
+    name: httpd
+    state: present
+  become: yes
+
+- name: Copy index.html to /var/www/html/ for VM1
+  copy:
+    src: vm1.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0444'
+  when: inventory_hostname == 'vm1-n01579648.canadacentral.cloudapp.azure.com'
+  become: yes
+
+- name: Copy index.html to /var/www/html/ for VM2
+  copy:
+    src: vm2.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0444'
+  when: inventory_hostname == 'vm2-n01579648.canadacentral.cloudapp.azure.com'
+  become: yes
+
+- name: Copy index.html to /var/www/html/ for VM3
+  copy:
+    src: vm3.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0444'
+  when: inventory_hostname == 'vm3-n01579648.canadacentral.cloudapp.azure.com'
+  become: yes
+
+- name: Start and enable Apache service
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  become: yes
+
